@@ -1,0 +1,4 @@
+<%@ ServiceHost Language="C#" Debug="true" 
+    Service="Rhetos.RhetosService, BookStore.Service" 
+    Factory="Autofac.Integration.Wcf.AutofacServiceHostFactory, Autofac.Integration.Wcf"
+    CodeBehind="RhetosService.svc.cs" %>
