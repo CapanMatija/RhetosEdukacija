@@ -1,0 +1,39 @@
+﻿Module Bookstore{
+	//a zadatak
+	Entity Employee
+	{
+		ShortString Name {Required;}
+		ShortString VAT {Unique; Required; }
+	}
+
+	//b zadatak
+	Entity Manager
+	{
+		Extends Bookstore.Employee;
+
+		ShortString BonusesInformation;
+	}
+
+	//c zadatak
+	Entity EducationRecord
+	{
+		Date DateOfEducation;
+		Reference Employee {Detail;}
+	}
+
+	//d zadatak
+	Entity Department
+	{
+		ShortString Code {Unique; Required; }
+		ShortString Description;
+	}
+
+	//e zadatak
+	Entity EmployeeDepartment
+	{
+		Reference Employee {Detail;}
+		Reference Department{Required;}
+
+		UniqueMultiple 'Employee Department';
+	}
+}
