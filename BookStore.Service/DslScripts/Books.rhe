@@ -32,6 +32,9 @@ Module Bookstore
         ShortString Title { Required; }
         Integer NumberOfPages;
         Reference Author Bookstore.Person;
+
+        ItemFilter CommonMisspelling 'book => book.Title.Contains("curiousity")';
+        InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
     }
 
     Entity Person
