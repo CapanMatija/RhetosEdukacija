@@ -28,7 +28,7 @@ Module Bookstore
 {
     Entity Book
     {
-        ShortString Code { Unique; Required; }
+        ShortString Code { AutoCode; Unique; Required; }
         ShortString Title { Required; }
         Integer NumberOfPages;
         Reference Author Bookstore.Person;
@@ -68,6 +68,10 @@ Module Bookstore
     Entity Topic
     {
         ShortString Name { Unique; Required; }
+
+        ItemFilter LockTopic 'item => item.Name.Contains("Fiction") ||
+            item.Name.Contains("History")';
+        Lock LockTopic '[Test] Topic contains lock mark.';
     }
 
     Entity BookTopic

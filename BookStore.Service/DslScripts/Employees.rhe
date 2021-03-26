@@ -4,6 +4,8 @@
 	{
 		ShortString Name {Required;}
 		ShortString VAT {Unique; Required; }
+
+		Logging{ AllProperties; }
 	}
 
 	//b zadatak
@@ -18,14 +20,26 @@
 	Entity EducationRecord
 	{
 		Date DateOfEducation;
-		Reference Employee {Detail;}
+		Reference Employee {Detail; DenyUserEdit;}
 	}
 
 	//d zadatak
 	Entity Department
 	{
-		ShortString Code {Unique; Required; }
-		ShortString Description;
+		ShortString Code {AutoCode; Unique; Required; }
+		ShortString Description{DefaultValue 'item => "No description for department"';}
+		DateTime TimeOfCreation{CreationTime; DenyUserEdit;}
+		DateTime TimeDescriptionModified
+		{
+			ModificationTimeOf Bookstore.Department.Description;
+		}
+
+		Logging
+		{
+			Log Bookstore.Department.Description;
+		}
+
+		Deactivatable;
 	}
 
 	//e zadatak
