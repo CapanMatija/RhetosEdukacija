@@ -37,6 +37,97 @@ Module Bookstore
         InvalidData CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
     }
 
+    Browse BookGrid Bookstore.Book
+    {
+        Take Code;
+        Take Title;
+        Take 'Author.Name';
+        Take TranslatorName 'Extension_ForeignBook.Translator.Name';
+        Take NumberOfComments 'Extension_BookInfo.NumberOfComments';
+        Take NumberOfTopics 'Extension_BookInfoTopics.NumberOfTopics';
+    }
+
+    SqlQueryable BookInfo
+        "
+            SELECT
+                b.ID,
+                NumberOfComments = COUNT(c.ID)
+            FROM
+                Bookstore.Book b
+                LEFT JOIN Bookstore.Comment c ON c.BookID = b.ID
+            GROUP BY
+                b.ID
+        "
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfComments;
+
+        AutodetectSqlDependencies;
+    }
+
+    SqlQueryable BookInfoTopics
+        "
+            SELECT
+                b.ID,
+                NumberOfTopics = COUNT(t.ID)
+            FROM
+                Bookstore.Book b
+                LEFT JOIN Bookstore.BookTopic bt ON b.ID = bt.BookID
+                LEFT JOIN Bookstore.Topic t ON bt.TopicID = t.ID
+            GROUP BY
+                b.ID
+        "
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfTopics;
+
+        AutodetectSqlDependencies;
+    }
+
+    SqlQueryable BookInfoExternal <SQL\BookInfo.sql>
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfComments;
+
+        AutodetectSqlDependencies;
+    }
+
+    Computed ExpectedBookRating 'repository =>
+        {
+            var books = repository.Bookstore.Book.Query()
+                .Select(b =>
+                    new
+                    {
+                        b.ID,
+                        b.Title,
+                        IsForeign = b.Extension_ForeignBook.ID != null
+                    })
+                .ToList();
+
+            var ratings = new List<ExpectedBookRating>();
+            foreach (var book in books)
+            {
+                decimal rating = 0;
+
+                if (book.Title?.IndexOf("super", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    rating += 100;
+
+                if (book.Title?.IndexOf("great", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                    rating += 50;
+
+                if (book.IsForeign)
+                    rating *= 1.2m;
+
+                ratings.Add(new ExpectedBookRating { ID = book.ID, Rating = rating });
+            }
+
+            return ratings.ToArray();
+        }'
+    {
+        Extends Bookstore.Book;
+        Decimal Rating;
+    }
+
     Entity Person
     {
         ShortString Name;

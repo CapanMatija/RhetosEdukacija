@@ -61,6 +61,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DslScripts\SQL\BookInfo.sql" />
     <Content Include="Global.asax" />
     <Content Include="RhetosService.svc" />
     <Content Include="Service1.svc" />
