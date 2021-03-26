@@ -172,4 +172,22 @@ Module Bookstore
 
         UniqueMultiple 'Book Topic';
     }
+
+    Hardcoded Genre
+    {
+        LongString ShortDescription;
+        Bool Fiction;
+
+        Entry Fantasy
+        {
+            Value ShortDescription 'Fantasy is a genre of speculative fiction set in a fictional universe';
+            Value Fiction 1;
+        }
+
+        Entry Crime
+        {
+            Value ShortDescription 'Suspense and mystery are key elements that are nearly ubiquitous to the genre';
+            Value Fiction 0;
+        }
+    }
 }
