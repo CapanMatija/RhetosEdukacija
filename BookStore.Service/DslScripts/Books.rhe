@@ -183,9 +183,76 @@ Module Bookstore
         Decimal Rating;
     }
 
+    Entity Disposal
+    {
+        Reference Book { Required; }
+        LongString Explanation { Required; }
+        DateTime EffectiveSince { CreationTIme; }
+
+        ItemFilter ImportantBookExplanation 'item => item.Book.Title.Contains("important") && item.Explanation.Length < 50';
+        InvalidData ImportantBookExplanation 'When disposing an important book, the explanation should be at least 50 characters long.'
+        {
+            MarkProperty Bookstore.Disposal.Explanation;
+            ErrorMetadata 'Severity' 'Low';
+        }
+
+        ItemFilter HighRating 'item => item.Book.Extension_BookRating.Rating > 100';
+        InvalidData HighRating 'You are not allowed to dispose a book with rating above 100.';
+    }
+
+
+
+    Entity BookRating
+    {
+        Extends Bookstore.Book;
+        Decimal Rating;
+    }
+
     Entity Person
     {
         ShortString Name;
+    }
+
+    SqlProcedure ComputePersonInfo "@NamePattern NVARCHAR(256), @LimitResultCount INT"
+        "
+            SELECT TOP (@LimitResultCount)
+                p.ID, Name, NameLength = LEN(p.Name), PersonID = p.ID
+            FROM
+                Bookstore.Person p
+            WHERE
+                p.Name LIKE '%' + @NamePattern + '%'
+            ORDER BY
+                p.Name
+        ";
+
+    Parameter PersonFilter
+    {
+        ShortString NamePattern;
+        Integer LimitResultCount;
+    }
+
+    Computed PersonInfo 'repository => {throw new Rhetos.UserException("Use filter \"Bookstore.PersonFilter\" to read the data.");}'
+    {
+        ShortString Name;
+        Integer NameLength;
+        Guid PersonID;
+
+        FilterBy PersonFilter
+            '(repository, parameter) =>
+            {
+                string sql = "EXEC Bookstore.ComputePersonInfo @p0, @p1";
+                var sqlParams = new object[] { parameter.NamePattern, parameter.LimitResultCount };
+
+                var result = _executionContext.EntityFrameworkContext.Database
+                    .SqlQuery<Bookstore.PersonInfo>(sql, sqlParams)
+                    .ToArray();
+                return result;
+            }';
+    }
+
+    SqlView AllPersons <SQL\PersonView.sql>
+    {
+        AutoDetectSqlDependencies;
     }
 
     Entity Comment
@@ -255,4 +322,111 @@ Module Bookstore
                 repository.Bookstore.Book.Insert(newBook);
             }
         }';
+
+    Entity NumberOfReviews
+    {
+        Extends Bookstore.Book;
+        Integer Count;
+    }
+
+    Parameter BestReviews{}
+
+
+    Entity Review
+    {
+        Reference Book { Required; }
+        Integer Score { Required; MinValue 1; MaxValue 5; }
+        Longstring Text;
+
+        //RepositoryUses _configuration 'Rhetos.Utilities.Iconfiguration, Rhetos.Utilities';
+
+        //ComposableFilterBy LongReviews '(query, repository, parameter) =>
+        //    {
+                //int minLength = _configuration.GetInt("Bookstore.LongReviewsMinLength", 10).Value;
+        //        int minLength = 10;
+        //        return query.Where(r => r.Text.Length >= minLength);
+        //    }';
+
+        RepositoryMember BetterReviews
+            'public IQueryable<Common.Queryable.Bookstore_Review> BetterReviews(int minScore)
+            {
+                return this.Query().Where(r => r.Score >= minScore);
+            }';
+
+        FilterBy BestReviews '(repository, parameter) =>
+            {
+                return BetterReviews(4).ToSimple().ToArray();
+            }';
+
+        SaveMethod
+        {
+            LoadOldItems
+            {
+                Take Score;
+                Take 'Book.Title';
+            }
+
+            Initialization DefaultTextFromScore
+                '
+                    foreach (var item in insertedNew)
+                        if(string.IsNullOrEmpty(item.Text) && item.Score != null)
+                            item.Text = item.Score.Value >=3
+                                ? "I like it"
+                                : "I don''t like it";
+                ';
+
+            OldDataLoaded AppendTextIfScoreChanged
+                '
+                    var itemsWithModifiedScore = updatedOld
+                        .Zip(updatedNew, (oldValue, newValue) => new { oldValue, newValue })
+                        .Where(modified => modified.oldValue.Score == null && modified.newValue.Score != null
+                            || modified.oldValue.Score != null && !modified.oldValue.Score.Equals(modified.newValue.Score))
+                        .ToList();
+
+                    foreach (var item in itemsWithModifiedScore)
+                        item.newValue.Text += string.Format(" (changed from {0} to {1})",
+                            item.oldValue.Score,
+                            item.newValue.Score);
+                ';
+
+            OnSaveUpdate UpdateNumberOfReviews
+                '
+                    var bookIds = insertedNew.Select(review => review.BookID.Value)
+                        .Concat(updatedNew.Select(review => review.BookID.Value))
+                        .Concat(deletedIds.Select(review => review.BookID.Value))
+                        .Distinct().ToList();
+
+                    var numberOfReviews = _domRepository.Bookstore.Book.Query(bookIds)
+                        .Select(book => new NumberOfReviews
+                        {
+                            ID = book.ID,
+                            Count = _domRepository.Bookstore.Review.Subquery.Where(r => r.BookID == book.ID).Count()
+                        })
+                        .ToList();
+   
+                    var oldRecordIds = _domRepository.Bookstore.NumberOfReviews.Query(bookIds).Select(n => n.ID).ToList();
+                    _domRepository.Bookstore.NumberOfReviews.Insert(numberOfReviews.Where(r => !oldRecordIds.Contains(r.ID)));
+                    _domRepository.Bookstore.NumberOfReviews.Delete(numberOfReviews.Where(r => oldRecordIds.Contains(r.ID)));
+                ';
+
+            OnSaveValidate DenyChangeOfLockedTitle
+                '
+                    var itemsWithModifiedScore = updatedOld
+                        .Zip(updatedNew, (oldValue, newValue) => new { oldValue, newValue })
+                        .Where(modified => modified.oldValue.Score == null && modified.newValue.Score != null
+                            || modified.oldValue.Score != null && !modified.oldValue.Score.Equals(modified.newValue.Score))
+                        .Where(modified => modified.oldValue.BookTitle.IndexOf("lock", StringComparison.InvariantCultureIgnoreCase) >= 0)
+                        .FirstOrDefault();
+
+                    if (itemsWithModifiedScore != null)
+                        throw new Rhetos.UserException(string.Format(
+                            "It is not allowed to modify score ({0} => {1}) for the book \"{2}\" because to contains \"lock\" in the title.",
+                            itemsWithModifiedScore.oldValue.Score,
+                            itemsWithModifiedScore.newValue.Score,
+                            itemsWithModifiedScore.oldValue.BookTitle));
+                ';
+        }
+    }
+
+    
 }
