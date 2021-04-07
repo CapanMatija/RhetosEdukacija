@@ -4,6 +4,11 @@
 		ShortString Name {Required; }
 		ShortString VAT {Unique; Required; }
 
+		PhoneNumber PrimaryPhoneNumber;
+		PhoneNumber SecondaryPhoneNumber;
+        PhoneNumber FaxNumber;
+        PhoneNumber MobileNumber;
+
 		Logging {AllProperties; }
 	}
 

@@ -6,7 +6,7 @@
         ShortString Title { Required; }
         Integer NumberOfPages;
 
-        //Deactivatable { DeactivateOnDelete; }
+        Deactivatable { DeactivateOnDelete; }
 
         Reference Author Bookstore.Person;
 
