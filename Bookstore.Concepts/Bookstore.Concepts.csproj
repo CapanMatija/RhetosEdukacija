@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="Class1.cs" />
     <Compile Include="DeactivateOnDeleteCodeGenerator.cs" />
+    <Compile Include="CodeTableInfo.cs" />
     <Compile Include="DeactivateOnDeleteInfo.cs" />
     <Compile Include="MonitoredRecordInfo.cs" />
     <Compile Include="MonitoredRecordMacro.cs" />

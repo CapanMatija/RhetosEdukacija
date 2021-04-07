@@ -25,7 +25,7 @@ namespace BookStore.Service.src.Bookstore.Concepts
                 new RegExMatchInfo
                 {
                     Property = conceptInfo,
-                    RegularExpression = "[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\\s\\./0-9]*",
+                    RegularExpression = @"[+]*[(]{0,1}[0-9]{1,4}[)]{0,1}[-\s\./0-9]*",
                     ErrorMessage = "Invalid phone number format."
                 }
             };

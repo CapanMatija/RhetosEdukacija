@@ -9,6 +9,7 @@ using Rhetos.Dsl.DefaultConcepts;
 
 namespace Bookstore.Concepts
 {
-    [Export(typeof(IConceptInfo))]
-    [ConceptKeyword("MonitoredRecord")]
+    //[Export(typeof(IConceptInfo))]
+    //[ConceptKeyword("MonitoredRecord")]
+
 }

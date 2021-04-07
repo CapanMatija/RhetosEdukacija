@@ -68,4 +68,9 @@
         Bool ForeignBooksOnly;
         Bool MaskTitles;
     }
+
+    Entity BookType
+    {
+        CodeTable;
+    }
 }
