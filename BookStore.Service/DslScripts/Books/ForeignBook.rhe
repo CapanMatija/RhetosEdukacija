@@ -1,0 +1,10 @@
+﻿Module Bookstore
+{
+    Entity ForeignBook
+    {
+        Extends Bookstore.Book;
+
+        ShortString OriginalLanguage;
+        Reference Translator Bookstore.Person;
+    }
+}

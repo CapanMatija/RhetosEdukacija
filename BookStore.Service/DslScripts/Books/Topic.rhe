@@ -1,0 +1,19 @@
+﻿Module Bookstore
+{
+    Entity Topic
+    {
+        ShortString Name { Unique; Required; }
+
+        ItemFilter LockTopic 'item => item.Name.Contains("Fiction") ||
+            item.Name.Contains("History")';
+        Lock LockTopic '[Test] Topic contains lock mark.';
+    }
+
+    Entity BookTopic
+    {
+        Reference Book { Detail; }
+        Reference Topic { Required; }
+
+        UniqueMultiple 'Book Topic';
+    }
+}

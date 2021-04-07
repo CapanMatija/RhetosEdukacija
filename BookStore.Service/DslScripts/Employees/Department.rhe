@@ -1,0 +1,27 @@
+﻿Module Bookstore{
+	Entity Department
+	{
+		ShortString Code {AutoCode; Unique; Required; }
+		ShortString Description{DefaultValue 'item => "No description for department"';}
+		DateTime TimeOfCreation{CreationTime; DenyUserEdit;}
+		DateTime TimeDescriptionModified
+		{
+			ModificationTimeOf Bookstore.Department.Description;
+		}
+
+		Logging
+		{
+			Log Bookstore.Department.Description;
+		}
+
+		Deactivatable;
+	}
+
+	Entity EmployeeDepartment
+	{
+		Reference Employee {Detail;}
+		Reference Department{Required;}
+
+		UniqueMultiple 'Employee Department';
+	}
+}

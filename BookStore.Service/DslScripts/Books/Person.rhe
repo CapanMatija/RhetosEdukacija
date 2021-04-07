@@ -1,0 +1,49 @@
+﻿Module Bookstore
+{
+    Entity Person
+    {
+        ShortString Name;
+    }
+
+    SqlProcedure ComputePersonInfo "@NamePattern NVARCHAR(256), @LimitResultCount INT"
+        "
+            SELECT TOP (@LimitResultCount)
+                p.ID, Name, NameLength = LEN(p.Name), PersonID = p.ID
+            FROM
+                Bookstore.Person p
+            WHERE
+                p.Name LIKE '%' + @NamePattern + '%'
+            ORDER BY
+                p.Name
+        ";
+
+    Parameter PersonFilter
+    {
+        ShortString NamePattern;
+        Integer LimitResultCount;
+    }
+
+    Computed PersonInfo 'repository => {throw new Rhetos.UserException("Use filter \"Bookstore.PersonFilter\" to read the data.");}'
+    {
+        ShortString Name;
+        Integer NameLength;
+        Guid PersonID;
+
+        FilterBy PersonFilter
+            '(repository, parameter) =>
+            {
+                string sql = "EXEC Bookstore.ComputePersonInfo @p0, @p1";
+                var sqlParams = new object[] { parameter.NamePattern, parameter.LimitResultCount };
+
+                var result = _executionContext.EntityFrameworkContext.Database
+                    .SqlQuery<Bookstore.PersonInfo>(sql, sqlParams)
+                    .ToArray();
+                return result;
+            }';
+    }
+
+    SqlView AllPersons <..\SQL\PersonView.sql>
+    {
+        AutoDetectSqlDependencies;
+    }
+}

@@ -1,0 +1,15 @@
+﻿Module Bookstore{
+	Entity Employee
+	{
+		ShortString Name {Required; }
+		ShortString VAT {Unique; Required; }
+
+		Logging {AllProperties; }
+	}
+
+	Entity EducationRecord
+	{
+		Date DateOfEducation;
+		Reference Employee {Detail; DenyUserEdit; }
+	}
+}

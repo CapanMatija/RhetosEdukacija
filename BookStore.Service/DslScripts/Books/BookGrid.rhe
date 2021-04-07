@@ -1,0 +1,57 @@
+﻿Module Bookstore
+{
+    Browse BookGrid Bookstore.Book
+    {
+        Take Code;
+        Take Title;
+        Take 'Author.Name';
+        Take TranslatorName 'Extension_ForeignBook.Translator.Name';
+        Take NumberOfComments 'Extension_BookInfo.NumberOfComments';
+        Take NumberOfTopics 'Extension_BookInfoTopics.NumberOfTopics';
+    }
+
+    SqlQueryable BookInfo
+        "
+            SELECT
+                b.ID,
+                NumberOfComments = COUNT(c.ID)
+            FROM
+                Bookstore.Book b
+                LEFT JOIN Bookstore.Comment c ON c.BookID = b.ID
+            GROUP BY
+                b.ID
+        "
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfComments;
+
+        AutodetectSqlDependencies;
+    }
+
+    SqlQueryable BookInfoTopics
+        "
+            SELECT
+                b.ID,
+                NumberOfTopics = COUNT(t.ID)
+            FROM
+                Bookstore.Book b
+                LEFT JOIN Bookstore.BookTopic bt ON b.ID = bt.BookID
+                LEFT JOIN Bookstore.Topic t ON bt.TopicID = t.ID
+            GROUP BY
+                b.ID
+        "
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfTopics;
+
+        AutodetectSqlDependencies;
+    }
+
+    SqlQueryable BookInfoExternal <..\SQL\BookInfo.sql>
+    {
+        Extends Bookstore.Book;
+        Integer NumberOfComments;
+
+        AutodetectSqlDependencies;
+    }
+}

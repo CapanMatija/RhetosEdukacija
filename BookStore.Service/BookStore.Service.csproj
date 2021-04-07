@@ -61,6 +61,8 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="DslScripts\BooksOld.txt" />
+    <Content Include="DslScripts\EmployeesOld.txt" />
     <Content Include="DslScripts\SQL\BookInfo.sql" />
     <Content Include="DslScripts\SQL\PersonView.sql" />
     <Content Include="Global.asax" />
@@ -81,6 +83,8 @@
     </Compile>
     <Compile Include="IService1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="src\Bookstore.Concepts\DeactivateOnDeleteInfo.cs" />
+    <Compile Include="src\Bookstore.Concepts\PhoneNumberInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -88,8 +92,22 @@
   <ItemGroup>
     <Content Include="rhetos-app.settings.json" />
     <Content Include="rhetos-build.settings.json" />
-    <Content Include="DslScripts\Books.rhe" />
-    <Content Include="DslScripts\Employees.rhe" />
+    <Content Include="ExternalAppSettings.config" />
+    <Content Include="DslScripts\Employees\Employee.rhe" />
+    <Content Include="DslScripts\Employees\Manager.rhe" />
+    <Content Include="DslScripts\Employees\Department.rhe" />
+    <Content Include="DslScripts\Books\Book.rhe" />
+    <Content Include="DslScripts\Books\Review.rhe" />
+    <Content Include="DslScripts\Books\Insert5Books.rhe" />
+    <Content Include="DslScripts\Books\Disposal.rhe" />
+    <Content Include="DslScripts\Books\BookRating.rhe" />
+    <Content Include="DslScripts\Books\Genre.rhe" />
+    <Content Include="DslScripts\Books\Person.rhe" />
+    <Content Include="DslScripts\Books\BookGrid.rhe" />
+    <Content Include="DslScripts\Books\Topic.rhe" />
+    <Content Include="DslScripts\Books\Comment.rhe" />
+    <Content Include="DslScripts\Books\ChildrensBook.rhe" />
+    <Content Include="DslScripts\Books\ForeignBook.rhe" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

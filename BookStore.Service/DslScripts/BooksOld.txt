@@ -24,13 +24,17 @@
 //InvalidData Bookstore.Book.CommonMisspelling 'It is not allowed to enter misspelled word "curiousity".';
 //Logging Bookstore.Book;
 
+
 Module Bookstore
 {
     Entity Book
     {
-        ShortString Code { AutoCode; Unique; Required; }
+        ShortString Code { AutoCode; Unique; Required; DenyUserEdit;}
         ShortString Title { Required; }
         Integer NumberOfPages;
+
+        //Deactivatable { DeactivateOnDelete; }
+
         Reference Author Bookstore.Person;
 
         ItemFilter LongBooks 'item => item.NumberOfPages >= 500';

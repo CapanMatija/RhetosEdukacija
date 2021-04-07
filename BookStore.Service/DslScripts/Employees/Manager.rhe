@@ -1,0 +1,8 @@
+﻿Module Bookstore{
+	Entity Manager
+	{
+		Extends Bookstore.Employee;
+
+		ShortString BonusesInformation;
+	}
+}

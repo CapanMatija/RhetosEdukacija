@@ -1,0 +1,8 @@
+﻿Module Bookstore
+{
+    Entity Comment
+    {
+        Reference Book { Detail; }
+        LongString Text;
+    }
+}
