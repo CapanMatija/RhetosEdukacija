@@ -83,8 +83,6 @@
     </Compile>
     <Compile Include="IService1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="src\Bookstore.Concepts\DeactivateOnDeleteInfo.cs" />
-    <Compile Include="src\Bookstore.Concepts\PhoneNumberInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

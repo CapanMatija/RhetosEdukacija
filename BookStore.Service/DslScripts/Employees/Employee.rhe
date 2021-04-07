@@ -3,6 +3,7 @@
 	{
 		ShortString Name {Required; }
 		ShortString VAT {Unique; Required; }
+		ShortString UserName;
 
 		PhoneNumber PrimaryPhoneNumber;
 		PhoneNumber SecondaryPhoneNumber;
