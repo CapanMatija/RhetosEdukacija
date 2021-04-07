@@ -42,11 +42,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="MonitoredRecordInfo.cs" />
     <Compile Include="DeactivateOnDeleteCodeGenerator.cs" />
     <Compile Include="CodeTableInfo.cs" />
     <Compile Include="DeactivateOnDeleteInfo.cs" />
-    <Compile Include="MonitoredRecordInfo.cs" />
-    <Compile Include="MonitoredRecordMacro.cs" />
     <Compile Include="PhoneNumberInfo.cs" />
     <Compile Include="PhoneNumberMacro.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
